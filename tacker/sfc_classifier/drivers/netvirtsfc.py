@@ -153,6 +153,11 @@ class NetVirtSFC():
             LOG.exception(_('Unable to delete NetVirt Classifier'))
             raise NetVirtClassifierDeleteFailed
 
+        acl_del_result = self.send_rest(None, 'delete', self.config_acl_url.format(instance_id))
+        if acl_del_result.status_code != 200:
+            LOG.exception(_('Unable to delete NetVirt IETF Access Control List'))
+            raise NetVirtClassifierDeleteFailed
+
         return sfcc_result
 
     @log.log
