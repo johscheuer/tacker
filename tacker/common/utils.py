@@ -25,6 +25,7 @@ import logging as std_logging
 import multiprocessing
 import os
 import random
+import re
 import signal
 import socket
 import uuid
@@ -299,3 +300,17 @@ def cpu_count():
         return multiprocessing.cpu_count()
     except NotImplementedError:
         return 1
+
+def get_keystone_client(auth_url):
+    if re.match('.+v3/?$', auth_url) is not None:
+        from keystoneclient.v3 import client as ks_client
+    else:
+        from keystoneclient.v2_0 import client as ks_client
+    return ks_client
+
+
+def get_correct_auth_url(auth_url):
+    if re.match('.+(v3/?|v2\.0/?)$', auth_url) is None:
+        auth_url = '{0}/v2.0'.format(auth_url)
+
+    return auth_url

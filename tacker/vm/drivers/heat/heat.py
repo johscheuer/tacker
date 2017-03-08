@@ -31,12 +31,13 @@ from keystoneclient.v2_0 import client as ks_client
 from oslo_config import cfg
 
 from tacker.common import log
+from tacker.common import utils as common_utils
 from tacker.extensions import vnfm
 from tacker.openstack.common import jsonutils
 from tacker.openstack.common import log as logging
 from tacker.vm.drivers import abstract_driver
 
-
+ks_client = common_utils.load_keystone_client(cfg.CONF.keystone_authtoken.auth_uri)
 LOG = logging.getLogger(__name__)
 CONF = cfg.CONF
 OPTS = [
@@ -451,7 +452,7 @@ class DeviceHeat(abstract_driver.DeviceAbstractDriver):
 class HeatClient:
     def __init__(self, context, password=None):
         # context, password are unused
-        auth_url = CONF.keystone_authtoken.auth_uri
+        auth_url = common_utils.get_correct_auth_url(cfg.CONF.keystone_authtoken.auth_uri)
         authtoken = CONF.keystone_authtoken
         kc = ks_client.Client(
             tenant_name=authtoken.project_name,
